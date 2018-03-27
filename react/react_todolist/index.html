@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="build/react.js"></script>
+		<script src="build/react-dom.js"></script>
+		<script src="build/browser.min.js"></script>
+	</head>
+
+	<body>
+		<div id="main"></div>
+		<script type="text/babel">
+			var Main=React.createClass({ 
+				getInitialState: function(){
+					return {
+						list:[]
+					};
+				},
+				handleChange: function(listNew){
+					this.setState({list:listNew});
+				},
+				render: function(){ 
+					return (
+						<div>
+							<New onAdd={this.handleChange} todo={this.state.list}/>
+							<List onDel={this.handleChange} todo={this.state.list}/>
+						</div>
+					); 
+				} 
+			}); 
+			
+			var New=React.createClass({
+				handleAdd: function(e){
+					e.preventDefault();
+					var inputNew=this.refs.addIn;
+					var newthing=inputNew.value.trim();
+					var listNew = this.props.todo;
+					if(newthing!==""){
+						listNew.push(newthing);
+						this.props.onAdd(listNew);
+					}
+					inputNew.value = '';
+				},
+				render: function(){
+					return (
+						<form onSubmit={this.handleAdd}>
+							<input type="text" ref="addIn"/><button>add</button>
+						</form>
+					)
+				}
+			});
+			
+			var List=React.createClass({
+				handleDel: function(e){
+					var delIndex = e.target.getAttribute("data-key");
+					this.props.todo.splice(delIndex,1);
+					this.props.onDel(this.props.todo);
+				},
+				render: function(){
+					return (
+						<ul>
+							{
+								this.props.todo.map(function(item,i){
+									return (<li key={i}>
+												<label>{item}</label> {console.log(this)}
+												<button className="destroy" onClick={this.handleDel} data-key={i}>delete</button>
+											</li>);
+								}.bind(this))
+							}
+						</ul>
+					);
+				}
+			});
+			ReactDOM.render(<Main />,document.getElementById("main"));
+		</script>
+	</body>
+
+</html>
